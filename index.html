@@ -83,7 +83,6 @@ dialog::backdrop{background:rgb(15 23 42 / 45%)}
 dialog h2{margin:0 0 10px;font-size:24px;letter-spacing:-.5px}
 dialog h3{margin:18px 0 5px;font-size:16px}
 dialog p{margin:0;color:var(--muted);font-size:14px}
-dialog .actions{margin:22px 0 0}
 .donate-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 16px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--text);font-size:14px;font-weight:650}
 .donate-link:hover{background:#f1f5f9}
 .qr-grid{display:flex;flex-wrap:wrap;gap:16px;margin-top:18px}
@@ -157,7 +156,6 @@ footer{padding:28px 0;background:white;border-top:1px solid var(--border)}
     <p>The encrypted payload is stored in the URL fragment after <code>#</code>, which browsers do not send to the web server in HTTP requests. The link never carries the key, so a link that leaks in a browser history, a chat log, or a screenshot is still unreadable. Send the key to the recipient through a separate channel.</p>
     <h3>Privacy</h3>
     <p>SecretNotes does not upload or store your note. Keep a copy of the link and the key: if you lose them, the note cannot be recovered. Use a modern browser with Web Crypto support and HTTPS.</p>
-    <div class="actions"><button class="primary" id="about-close">Close</button></div>
   </dialog>
 
   <dialog id="donate" aria-labelledby="donate-title">
@@ -175,7 +173,6 @@ footer{padding:28px 0;background:white;border-top:1px solid var(--border)}
         <figcaption>Bitcoin</figcaption>
       </figure>
     </div>
-    <div class="actions"><button class="primary" id="donate-close">Close</button></div>
   </dialog>
 </main>
 <footer><div class="container footer-inner">
@@ -205,14 +202,14 @@ function setMode(mode) {
 $("#show-read-key").addEventListener("change", e => $("#read-key").type = e.target.checked ? "text" : "password");
 $("#message").addEventListener("input", () => $("#message-count").textContent = `${$("#message").value.length} characters`);
 
-function wireDialog(trigger, dialog, close) {
+// Both popups dismiss the same way: click the backdrop outside the box, or press Esc (native to <dialog>).
+function wireDialog(trigger, dialog) {
   const el = $(dialog);
   $(trigger).addEventListener("click", e => { e.preventDefault(); el.showModal(); });
-  $(close).addEventListener("click", () => el.close());
   el.addEventListener("click", e => { if (e.target === el) el.close(); });
 }
-wireDialog("#about-link", "#about", "#about-close");
-wireDialog("#donate-link", "#donate", "#donate-close");
+wireDialog("#about-link", "#about");
+wireDialog("#donate-link", "#donate");
 
 function toB64Url(bytes) {
   let binary = "";
