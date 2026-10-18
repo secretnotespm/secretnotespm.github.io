@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecretNotes — encrypted notes, shared by link and key</title>
+<meta name="description" content="Write a note that only its reader can unlock. Encryption happens in your browser, the link never carries the key, and nothing is uploaded or stored.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232563eb'/><path d='M12 14.5v-3a4 4 0 0 1 8 0v3' fill='none' stroke='%23fff' stroke-width='2.4'/><rect x='9' y='14.5' width='14' height='10' rx='2.6' fill='%23fff'/></svg>" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SecretNotes">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="SecretNotes — encrypted notes, shared by link and key">
+<meta property="og:description" content="Write a note that only its reader can unlock. Encryption happens in your browser, the link never carries the key, and nothing is uploaded or stored.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SecretNotes — encrypted notes, shared by link and key">
+<meta name="twitter:description" content="Write a note that only its reader can unlock. Encryption happens in your browser, the link never carries the key, and nothing is uploaded or stored.">
+<link rel="canonical" href="https://secretnotespm.github.io/">
+<meta property="og:url" content="https://secretnotespm.github.io/">
+<meta property="og:image" content="https://secretnotespm.github.io/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A white padlock on a blue tile beside the SecretNotes wordmark and the words Encrypt a note. Send the link.">
+<meta name="twitter:image" content="https://secretnotespm.github.io/og-cover.png">
+<meta name="twitter:image:alt" content="A white padlock on a blue tile beside the SecretNotes wordmark and the words Encrypt a note. Send the link.">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"SecretNotes","url":"https://secretnotespm.github.io/","applicationCategory":"UtilityApplication","operatingSystem":"Any modern web browser","browserRequirements":"Requires JavaScript and Web Crypto","description":"Write a note that only its reader can unlock. Encryption happens in your browser, the link never carries the key, and nothing is uploaded or stored.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isAccessibleForFree":true,"featureList":["AES-256-GCM encryption in the browser","Fresh 256-bit random key per note","Encrypted payload carried in the URL fragment","No upload, no storage, no account"]}
+</script>
+<style>
+:root {
+  --primary:#2563eb; --primary-hover:#1d4ed8; --bg:#f8fafc;
+  --surface:#fff; --text:#172033; --muted:#64748b;
+  --border:#e2e8f0; --radius:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--primary);text-decoration:none}
+button,input,textarea{font:inherit}
+.container{width:min(1000px,calc(100% - 40px));margin-inline:auto}
+.tool-container{max-width:760px;margin-inline:auto}
+header{background:var(--surface);border-bottom:1px solid var(--border)}
+.navbar{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{color:var(--text);font-size:22px;font-weight:800;letter-spacing:-1px}
+.logo span{color:var(--primary)}
+.nav-links{display:flex;align-items:center;gap:20px;font-size:14px}
+.nav-links a{color:var(--muted)}
+main{min-height:70vh;padding:34px 0 64px}
+.eyebrow{color:var(--primary);font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:1px}
+h1{margin:10px 0;font-size:clamp(28px,5vw,40px);line-height:1.2;letter-spacing:-1.5px}
+.description{color:var(--muted);margin:12px 0 26px}
+.card{padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgb(15 23 42 / 4%)}
+.field{margin-bottom:18px}
+.field-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
+label{font-size:14px;font-weight:650}
+.hint{color:var(--muted);font-size:12px}
+textarea{display:block;width:100%;min-height:135px;padding:14px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--text);font:14px/1.65 ui-monospace,Consolas,monospace;resize:vertical;overflow-wrap:anywhere}
+input[type="text"],input[type="password"]{display:block;width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--text)}
+textarea:focus,input:focus{outline:3px solid rgb(37 99 235 / 12%);border-color:var(--primary)}
+textarea[readonly]{background:#f8fafc}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 22px}
+button{min-height:40px;padding:9px 16px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--text);font-size:14px;font-weight:650;cursor:pointer}
+button:hover{background:#f1f5f9}
+button.primary{background:var(--primary);border-color:var(--primary);color:white}
+button.primary:hover{background:var(--primary-hover)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:disabled:hover{background:white}
+button.primary:disabled:hover{background:var(--primary)}
+button:focus-visible,a:focus-visible{outline:3px solid rgb(37 99 235 / 30%);outline-offset:2px}
+.status{min-height:22px;margin-top:8px;font-size:13px;color:var(--muted)}
+.status.success{color:#15803d}.status.error{color:#b91c1c}
+button.copied{border-color:#15803d;color:#15803d;background:#f0fdf4}
+button.copied::after{content:"✓";margin-left:7px;font-weight:800}
+@keyframes copy-pop{0%{transform:scale(1)}45%{transform:scale(.93)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion: no-preference){
+  button.copied{animation:copy-pop .28s ease}
+}
+.checkline{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);margin:10px 0}
+.checkline input{width:16px;height:16px}
+dialog{width:min(560px,calc(100% - 40px));padding:24px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);box-shadow:0 18px 50px rgb(15 23 42 / 22%)}
+dialog::backdrop{background:rgb(15 23 42 / 45%)}
+dialog h2{margin:0 0 10px;font-size:24px;letter-spacing:-.5px}
+dialog h3{margin:18px 0 5px;font-size:16px}
+dialog p{margin:0;color:var(--muted);font-size:14px}
+dialog .actions{margin:22px 0 0}
+.donate-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 16px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--text);font-size:14px;font-weight:650}
+.donate-link:hover{background:#f1f5f9}
+.qr-grid{display:flex;flex-wrap:wrap;gap:16px;margin-top:18px}
+.qr{margin:0;flex:1 1 200px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.qr-img{width:170px;height:170px;margin-top:16px;padding:6px;border:1px solid var(--border);border-radius:8px;background:white}
+.qr figcaption{margin-top:8px;color:var(--muted);font-size:13px}
+footer{padding:28px 0;background:white;border-top:1px solid var(--border)}
+.footer-inner{display:flex;justify-content:center}
+.footer-copy{font-size:13px;color:var(--muted)}
+[hidden]{display:none!important}
+@media(max-width:640px){.container{width:calc(100% - 28px)}main{padding-top:24px}.card{padding:17px}.actions button{flex:1 1 auto}}
+</style>
+</head>
+<body>
+<header>
+  <div class="container navbar">
+    <a class="logo" href="/" aria-label="SecretNotes home">secret<span>notes</span></a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="#about" id="about-link">How it works</a>
+      <a href="#donate" id="donate-link">Donations</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <div class="container tool-container">
+    <section>
+      <div class="eyebrow">No account. No upload.</div>
+      <h1>Encrypt a note. Send the link.</h1>
+      <p class="description">Write a note only its intended reader can unlock, then send the link and its key over separate channels.</p>
+    </section>
+
+    <section class="card" aria-label="Note encryption tool">
+      <section id="write-panel" aria-label="Write a note">
+        <div class="field">
+          <div class="field-header"><label for="message">Your note</label><span class="hint" id="message-count">0 characters</span></div>
+          <textarea id="message" placeholder="Type or paste the note you want to share..." spellcheck="false"></textarea>
+        </div>
+        <div class="actions">
+          <button class="primary" id="encrypt">Encrypt & create link →</button>
+          <button id="copy-link" hidden>Copy link</button>
+          <button id="copy-key" hidden>Copy key</button>
+        </div>
+      </section>
+
+      <section id="read-panel" aria-label="Read a note" hidden>
+        <div class="field" id="read-key-field">
+          <div class="field-header"><label for="read-key">Decryption key</label></div>
+          <input id="read-key" type="password" autocomplete="off" placeholder="Enter the key for this note">
+          <label class="checkline"><input id="show-read-key" type="checkbox"> Show key</label>
+        </div>
+        <div class="actions" id="decrypt-actions">
+          <button class="primary" id="decrypt">Decrypt note →</button>
+        </div>
+        <div class="field" id="decrypted-field" hidden>
+          <div class="field-header"><label for="decrypted">Decrypted note</label></div>
+          <textarea id="decrypted" readonly spellcheck="false"></textarea>
+          <div class="actions"><button class="primary" id="copy-message">Copy note</button></div>
+        </div>
+      </section>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </section>
+
+  </div>
+
+  <dialog id="about" aria-labelledby="about-title">
+    <h2 id="about-title">How it works</h2>
+    <h3>Private by design</h3>
+    <p>Notes are encrypted in your browser with AES-256-GCM. Every note gets its own 256-bit key from the browser's random source, plus a unique random salt and nonce, and the key is strengthened with PBKDF2-SHA-256 before it becomes the AES key.</p>
+    <h3>Share links safely</h3>
+    <p>The encrypted payload is stored in the URL fragment after <code>#</code>, which browsers do not send to the web server in HTTP requests. The link never carries the key, so a link that leaks in a browser history, a chat log, or a screenshot is still unreadable. Send the key to the recipient through a separate channel.</p>
+    <h3>Privacy</h3>
+    <p>SecretNotes does not upload or store your note. Keep a copy of the link and the key: if you lose them, the note cannot be recovered. Use a modern browser with Web Crypto support and HTTPS.</p>
+    <div class="actions"><button class="primary" id="about-close">Close</button></div>
+  </dialog>
+
+  <dialog id="donate" aria-labelledby="donate-title">
+    <h2 id="donate-title">Donations</h2>
+    <p>SecretNotes is free and does all its work inside your browser. If it has saved you some trouble, you can buy the next coffee:</p>
+    <div class="qr-grid">
+      <figure class="qr">
+        <a class="donate-link" href="https://www.paypal.com/paypalme/ndaprela" target="_blank" rel="noopener noreferrer">Donate with PayPal</a>
+        <img class="qr-img" src="qr-paypal.svg" width="170" height="170" loading="lazy" decoding="async" alt="PayPal QR code for donations">
+        <figcaption>PayPal</figcaption>
+      </figure>
+      <figure class="qr">
+        <a class="donate-link" href="bitcoin:bc1qf3hdh0flqu6fcdn68wph87mxch59jkge5ee7tm">Donate with Bitcoin</a>
+        <img class="qr-img" src="qr-btc.svg" width="170" height="170" loading="lazy" decoding="async" alt="Bitcoin QR code for donations">
+        <figcaption>Bitcoin</figcaption>
+      </figure>
+    </div>
+    <div class="actions"><button class="primary" id="donate-close">Close</button></div>
+  </dialog>
+</main>
+<footer><div class="container footer-inner">
+  <div class="footer-copy">© <span id="year"></span> SecretNotes. Your secrets stay yours.</div>
+</div></footer>
+<script>
+const $ = selector => document.querySelector(selector);
+const encoder = new TextEncoder();
+const decoder = new TextDecoder("utf-8", { fatal: true });
+const params = new URLSearchParams(location.hash.slice(1));
+const sealed = params.get("data") || "";
+let shareLink = "";
+let shareKey = "";
+const status = $("#status");
+$("#year").textContent = new Date().getFullYear();
+
+function report(message, type = "") {
+  status.textContent = message;
+  status.className = `status ${type}`.trim();
+}
+function setMode(mode) {
+  const writing = mode === "write";
+  $("#write-panel").hidden = !writing;
+  $("#read-panel").hidden = writing;
+  report("");
+}
+$("#show-read-key").addEventListener("change", e => $("#read-key").type = e.target.checked ? "text" : "password");
+$("#message").addEventListener("input", () => $("#message-count").textContent = `${$("#message").value.length} characters`);
+
+function wireDialog(trigger, dialog, close) {
+  const el = $(dialog);
+  $(trigger).addEventListener("click", e => { e.preventDefault(); el.showModal(); });
+  $(close).addEventListener("click", () => el.close());
+  el.addEventListener("click", e => { if (e.target === el) el.close(); });
+}
+wireDialog("#about-link", "#about", "#about-close");
+wireDialog("#donate-link", "#donate", "#donate-close");
+
+function toB64Url(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function fromB64Url(value) {
+  if (!/^[A-Za-z0-9_-]+$/.test(value)) throw new Error("Invalid encrypted payload.");
+  const base64 = value.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - value.length % 4) % 4);
+  const binary = atob(base64);
+  return Uint8Array.from(binary, c => c.charCodeAt(0));
+}
+function randomBytes(length) {
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return bytes;
+}
+async function deriveKey(passphrase, salt) {
+  const material = await crypto.subtle.importKey("raw", encoder.encode(passphrase), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt, iterations: 310000, hash: "SHA-256" },
+    material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
+  );
+}
+function makeReadUrl(payload) {
+  const url = new URL(location.href);
+  url.search = "";
+  url.hash = new URLSearchParams({ data: payload }).toString();
+  return url.href;
+}
+function parsePayload(raw) {
+  // The sealed payload comes from the link only; a key there is ignored by never being read.
+  const decoded = JSON.parse(decoder.decode(fromB64Url(raw)));
+  if (!decoded || decoded.v !== 1 || !decoded.salt || !decoded.iv || !decoded.ciphertext) {
+    throw new Error("This encrypted payload is not valid or is not supported.");
+  }
+  return decoded;
+}
+const copyButtons = { link: $("#copy-link"), key: $("#copy-key"), message: $("#copy-message") };
+const copiedLabels = new Map();
+function clearCopied(...buttons) {
+  for (const button of buttons) {
+    clearTimeout(button.copiedTimer);
+    button.classList.remove("copied");
+    if (copiedLabels.has(button)) { button.setAttribute("aria-label", copiedLabels.get(button)); copiedLabels.delete(button); }
+  }
+}
+function flash(button, label) {
+  // Only one thing can have been copied, so clear any other button's confirmation first.
+  clearCopied(...Object.values(copyButtons));
+  copiedLabels.set(button, button.textContent.trim());
+  button.classList.add("copied");
+  button.setAttribute("aria-label", `${label} copied`);
+  button.copiedTimer = setTimeout(() => clearCopied(button), 1500);
+}
+async function copyOut(value, what, button) {
+  try {
+    await navigator.clipboard.writeText(value);
+    flash(button, what);
+  } catch {
+    window.prompt(`Copy the ${what.toLowerCase()} manually:`, value);
+    report("Clipboard blocked — copy it from the dialog.", "error");
+  }
+}
+$("#encrypt").addEventListener("click", async () => {
+  const message = $("#message").value;
+  if (!message) { report("Enter a note to encrypt.", "error"); return; }
+  if (!crypto.subtle) { report("Secure encryption requires a modern browser on HTTPS or localhost.", "error"); return; }
+  const button = $("#encrypt");
+  button.disabled = true;
+  shareLink = ""; shareKey = "";
+  $("#copy-link").hidden = true; $("#copy-key").hidden = true;
+  clearCopied(...Object.values(copyButtons));
+  try {
+    // A 256-bit random key represented as a URL-safe passphrase; the writer never supplies one.
+    shareKey = toB64Url(randomBytes(32));
+    const salt = randomBytes(16);
+    const iv = randomBytes(12);
+    const key = await deriveKey(shareKey, salt);
+    const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoder.encode(message));
+    const payload = toB64Url(encoder.encode(JSON.stringify({
+      v: 1, salt: toB64Url(salt), iv: toB64Url(iv), ciphertext: toB64Url(new Uint8Array(ciphertext))
+    })));
+    // The link carries the payload only; the key must reach the reader another way.
+    shareLink = makeReadUrl(payload);
+    $("#copy-link").hidden = false;
+    $("#copy-key").hidden = false;
+    report("Encrypted with a fresh random key. Copy the link and the key into separate channels.", "success");
+    $("#copy-link").focus();
+  } catch (error) {
+    console.error(error);
+    shareLink = ""; shareKey = "";
+    report("Unable to encrypt this note in this browser.", "error");
+  } finally { button.disabled = false; }
+});
+copyButtons.link.addEventListener("click", () => copyOut(shareLink, "Link", copyButtons.link));
+copyButtons.key.addEventListener("click", () => copyOut(shareKey, "Key", copyButtons.key));
+$("#decrypt").addEventListener("click", async () => {
+  if (!crypto.subtle) { report("Secure decryption requires a modern browser on HTTPS or localhost.", "error"); return; }
+  try {
+    if (!sealed) throw new Error("This link does not contain a sealed note.");
+    const payload = parsePayload(sealed);
+    const passphrase = $("#read-key").value;
+    if (!passphrase) throw new Error("Enter the decryption key.");
+    const salt = fromB64Url(payload.salt), iv = fromB64Url(payload.iv);
+    const key = await deriveKey(passphrase, salt);
+    const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, fromB64Url(payload.ciphertext));
+    $("#decrypted").value = decoder.decode(plaintext);
+    $("#decrypted-field").hidden = false;
+    report("Note decrypted successfully.", "success");
+  } catch (error) {
+    $("#decrypted-field").hidden = true;
+    report(error.name === "OperationError" ? "Decryption failed. The key may be wrong or the payload may have been altered." : (error.message || "Unable to decrypt this note."), "error");
+  }
+});
+copyButtons.message.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText($("#decrypted").value);
+    flash(copyButtons.message, "Note");
+    report("Decrypted note copied.", "success");
+  } catch { $("#decrypted").focus(); $("#decrypted").select(); report("Select the note and copy it manually.", "error"); }
+});
+
+// The URL decides which view opens: a sealed payload in the fragment shows the reader,
+// anything else shows the composer. The payload itself stays off screen — the reader
+// only ever supplies the key and reads the plaintext.
+if (sealed) {
+  setMode("read");
+  $("#read-key").focus();
+}
+</script>
+</body>
+</html>

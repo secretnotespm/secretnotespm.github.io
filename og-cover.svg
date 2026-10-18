@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-labelledby="t d">
+  <title id="t">SecretNotes — encrypted notes, shared by link and key</title>
+  <desc id="d">A padlock on a blue tile beside the SecretNotes wordmark and the line "Encrypt a note. Send the link."</desc>
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <rect width="12" height="630" fill="#2563eb"/>
+
+  <g transform="translate(88,227) scale(5.5)">
+    <rect width="32" height="32" rx="7" fill="#2563eb"/>
+    <path d="M12 14.5v-3a4 4 0 0 1 8 0v3" fill="none" stroke="#fff" stroke-width="2.4"/>
+    <rect x="9" y="14.5" width="14" height="10" rx="2.6" fill="#fff"/>
+  </g>
+
+  <g font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+    <text x="320" y="228" font-size="54" font-weight="800" letter-spacing="-2" fill="#172033">secret<tspan fill="#2563eb">notes</tspan></text>
+    <text x="320" y="336" font-size="74" font-weight="800" letter-spacing="-2.5" fill="#172033">Encrypt a note.</text>
+    <text x="320" y="410" font-size="74" font-weight="800" letter-spacing="-2.5" fill="#172033">Send the link.</text>
+    <text x="320" y="470" font-size="30" font-weight="400" fill="#64748b">No account. No upload. Just a link and a key.</text>
+    <text x="320" y="530" font-size="26" font-weight="650" fill="#94a3b8">secretnotespm.github.io</text>
+  </g>
+</svg>
